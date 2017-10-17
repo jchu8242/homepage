@@ -1,41 +1,28 @@
-// Get dependencies
-const express = require('express');
-const path = require('path');
-const http = require('http');
-const bodyParser = require('body-parser');
-const helmet = require('helmet');
 
-const https = require('https');
-const forceSSL = require('express-force-ssl');
+// set up ======================================================================
+var express = require('express');
+var app = express(); 						// create our app w/ express
+var mongoose = require('mongoose'); 				// mongoose for mongodb
+var port = process.env.PORT || 8080; 				// set the port
+var database = require('./config/database'); 			// load the database config
+var morgan = require('morgan');
+var bodyParser = require('body-parser');
+var methodOverride = require('method-override');
 
-// Check environment - if production include additional
-const app = express();
+// configuration ===============================================================
+mongoose.connect(database.localUrl); 	// Connect to local MongoDB instance. A remoteUrl is also available (modulus.io)
 
-// use helmet
-app.use(helmet());
-
-// Get our API routes
-const api = require('./api');
-
-// app.use binds application middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-
-// log requests to console .
-app.use(morgan('dev'));
-
-// Point static path to dist folder
-app.use(express.static(path.join(__dirname, 'dist')));
-
-// Set our api routes - /api will prefix the routes found in api.js
-app.use('/api', api);
+app.use(express.static('./public')); 		// set the static files location /public/img will be /img for users
+app.use(morgan('dev')); // log every request to the console
+app.use(bodyParser.urlencoded({'extended': 'true'})); // parse application/x-www-form-urlencoded
+app.use(bodyParser.json()); // parse application/json
+app.use(bodyParser.json({type: 'application/vnd.api+json'})); // parse application/vnd.api+json as json
+app.use(methodOverride('X-HTTP-Method-Override')); // override with the X-HTTP-Method-Override header in the request
 
 
-const port = process.env.PORT || '3000';
-app.set('port', port);
+// routes ======================================================================
+require('./routes/index.js')(app);
 
-//Create HTTP server.
-const server = http.createServer(app);
-
-//Listen on provided port, on all network interfaces.
-server.listen(port, () => console.log(`running on port ${port}`));
+// listen (start app with node server.js) ======================================
+app.listen(port);
+console.log("App listening on port " + port);
