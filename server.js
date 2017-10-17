@@ -8,8 +8,6 @@ const helmet = require('helmet');
 const https = require('https');
 const forceSSL = require('express-force-ssl');
 
-c
-
 // Check environment - if production include additional
 const app = express();
 
