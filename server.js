@@ -1,10 +1,11 @@
 const express = require('express');
-const app = express()
+const app = express();
+const http = require('http');
 
-app.get('/', function (req, res){
-    res.send('Hello, World!')
-})
+const api = require('./routes/api');
+app.use('/api', api);
 
-app.listen(3000, function (){
-    console.log('Example app listening on port 3000!');
-})
+const port = process.env.PORT || '3000';
+app.set('port', port);
+const server = http.createServer(app).listen(port);
+server.listen(port, () => console.log(`API running on localhost:${port}`));
