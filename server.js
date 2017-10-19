@@ -4,6 +4,8 @@ const http = require('http');
 
 const api = require('./routes/api');
 app.use('/api', api);
+app.set('view engine', 'pug');
+
 
 const port = process.env.PORT || '3000';
 app.set('port', port);
