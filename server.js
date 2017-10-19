@@ -5,6 +5,8 @@ const path = require('path');
 const https = require('https');
 const forceSSL = require('express-force-ssl');
 const helmet = require('helmet');
+const fs = require ('fs');
+
 
 const api = require('./routes/api');
 
@@ -30,7 +32,11 @@ app.get('/', function (req, res) {
     res.render('index', { title: 'Jonathan', message: 'Welcome to Jonathan\'s homepage' })
 })
 
+const ssl_options = {
+    key: fs.readFileSync('/etc/letsencrypt/options-ssl-nginx.conf'),
+  };
+
 const port = process.env.PORT || '3000';
 app.set('port', port);
-const server = https.createServer(app).listen(port);
+const server = https.createServer(ssl_options, app).listen(port);
 server.listen(port, () => console.log(`API running on localhost:${port}`));
