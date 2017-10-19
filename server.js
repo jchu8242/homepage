@@ -2,8 +2,21 @@ const express = require('express');
 const app = express();
 const http = require('http');
 const path = require('path');
+const https = require('https');
+const forceSSL = require('express-force-ssl');
+const helmet = require('helmet');
 
 const api = require('./routes/api');
+
+// use helmet
+
+app.use(helmet());
+
+// force SSL
+app.use(forceSSL);
+
+
+
 
 // if create routes api will prefix all routes
 app.use('/api', api);
@@ -19,5 +32,5 @@ app.get('/', function (req, res) {
 
 const port = process.env.PORT || '3000';
 app.set('port', port);
-const server = http.createServer(app).listen(port);
+const server = https.createServer(app).listen(port);
 server.listen(port, () => console.log(`API running on localhost:${port}`));
